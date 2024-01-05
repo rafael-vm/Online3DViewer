@@ -5,8 +5,8 @@ import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { AddSvgIconElement } from './utils.js';
 import { ImportErrorCode } from '../engine/import/importer.js';
 
-export class ThreeModelLoaderUI
-{
+
+export class ThreeModelLoaderUI {
     constructor ()
     {
         this.modelLoader = new ThreeModelLoader ();
