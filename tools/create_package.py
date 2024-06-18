@@ -67,10 +67,14 @@ def CreateWebsite (rootDir, websiteDir, version, testBuild):
 		if os.path.exists (metaFile):
 			metaContent = Utils.GetFileContent (metaFile)
 			replacer.ReplaceTokenContent ('<!-- meta start -->', '<!-- meta end -->', metaContent)
-		analyticsFile = os.path.join (rootDir, 'plugins', 'website_analytics_data.txt')
-		if os.path.exists (analyticsFile) and not testBuild:
-			analyticsContent = Utils.GetFileContent (analyticsFile)
-			replacer.ReplaceTokenContent ('<!-- analytics start -->', '<!-- analytics end -->', analyticsContent)
+		websiteAnalyticsFile = os.path.join (rootDir, 'plugins', 'website_analytics_data.txt')
+		if os.path.exists (websiteAnalyticsFile) and not testBuild:
+			websiteAnalyticsContent = Utils.GetFileContent (websiteAnalyticsFile)
+			replacer.ReplaceTokenContent ('<!-- website analytics start -->', '<!-- website analytics end -->', websiteAnalyticsContent)
+		embedAnalyticsFile = os.path.join (rootDir, 'plugins', 'embed_analytics_data.txt')
+		if os.path.exists (websiteAnalyticsFile) and not testBuild:
+			embedAnalyticsContent = Utils.GetFileContent (embedAnalyticsFile)
+			replacer.ReplaceTokenContent ('<!-- embed analytics start -->', '<!-- embed analytics end -->', embedAnalyticsContent)
 		replacer.WriteToFile (htmlFilePath)
 
 def CreateEnginePackage (rootDir, engineDir, websiteDir):
@@ -79,8 +83,8 @@ def CreateEnginePackage (rootDir, engineDir, websiteDir):
 
 	zipPath = os.path.join (engineDir, 'o3dv.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	for file in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
-		zip.write (os.path.join (websiteDir, 'libs', 'loaders', file), 'libs/loaders/' + file)
+	for file in os.listdir (os.path.join (websiteDir, 'libs')):
+		zip.write (os.path.join (websiteDir, 'libs', file), 'libs/' + file)
 	for file in os.listdir (os.path.join (websiteDir, 'assets', 'envmaps')):
 		filePath = os.path.join (websiteDir, 'assets', 'envmaps', file)
 		if os.path.isdir (filePath):

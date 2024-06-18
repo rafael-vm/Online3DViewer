@@ -1,4 +1,6 @@
 import { SetExternalLibLocation } from '../engine/io/externallibs.js';
+import { Loc } from '../engine/core/localization.js';
+import { AddDiv, AddDomElement } from '../engine/viewer/domutils.js';
 import { Embed } from './embed.js';
 import { Website } from './website.js';
 import { SetEventHandler, HandleEvent } from './eventhandler.js';
@@ -25,7 +27,8 @@ export const UI = {
     ButtonDialog,
     ProgressDialog,
     ShowMessageDialog,
-    HandleEvent
+    HandleEvent,
+    Loc
 };
 
 export function SetWebsiteEventHandler (eventHandler)
@@ -45,9 +48,22 @@ export function RegisterToolbarPlugin (plugin)
 
 export function StartWebsite (externalLibLocation)
 {
-    SetExternalLibLocation (externalLibLocation);
     window.addEventListener ('load', () => {
-    let website = new Website ({
+        if (window.self !== window.top) {
+            let noEmbeddingDiv = AddDiv (document.body, 'noembed');
+            AddDiv (noEmbeddingDiv, null, Loc ('Embedding Online 3D Viewer in an iframe is not supported.'));
+            let link = AddDomElement (noEmbeddingDiv, 'a', null, Loc ('Open Online 3D Viewer'));
+            link.target = '_blank';
+            link.href = window.self.location;
+            return;
+        }
+
+        SetExternalLibLocation (externalLibLocation);
+
+        document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
+        document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
+
+        let website = new Website ({
             headerDiv : document.getElementById ('header'),
             headerButtonsDiv : document.getElementById ('header_buttons'),
             toolbarDiv : document.getElementById ('toolbar'),

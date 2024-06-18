@@ -1,7 +1,6 @@
 import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
-import { LoadExternalLibrary } from '../io/externallibs.js';
 import { GetFileName } from '../io/fileutils.js';
 import { PhongMaterial, PhysicalMaterial } from '../model/material.js';
 import { TransformMesh } from '../model/meshutils.js';
@@ -9,11 +8,12 @@ import { IsModelEmpty } from '../model/modelutils.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
-import { UpdateMaterialTransparency } from './importerutils.js';
+import { LoadExternalLibrary, UpdateMaterialTransparency } from './importerutils.js';
 import { TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Line } from '../model/line.js';
 import { ArrayToCoord3D } from '../geometry/coord3d.js';
+import { Loc } from '../core/localization.js';
 
 export class Importer3dm extends ImporterBase
 {
@@ -48,14 +48,14 @@ export class Importer3dm extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.rhino === null) {
-            LoadExternalLibrary ('loaders/rhino3dm.min.js').then (() => {
+            LoadExternalLibrary ('rhino3dm').then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
                     this.ImportRhinoContent (fileContent);
                     onFinish ();
                 });
             }).catch (() => {
-                this.SetError ('Failed to load rhino3dm.');
+                this.SetError (Loc ('Failed to load rhino3dm.'));
                 onFinish ();
             });
         } else {
@@ -68,12 +68,12 @@ export class Importer3dm extends ImporterBase
     {
         let rhinoDoc = this.rhino.File3dm.fromByteArray (fileContent);
         if (rhinoDoc === null) {
-            this.SetError ('Failed to read Rhino file.');
+            this.SetError (Loc ('Failed to read Rhino file.'));
             return;
         }
         this.ImportRhinoDocument (rhinoDoc);
         if (IsModelEmpty (this.model)) {
-            this.SetError ('The model doesn\'t contain any 3D meshes. Try to save the model while you are in shaded view in Rhino.');
+            this.SetError (Loc ('The model doesn\'t contain any 3D meshes. Try to save the model while you are in shaded view in Rhino.'));
         }
     }
 
@@ -105,7 +105,7 @@ export class Importer3dm extends ImporterBase
     {
         let docStrings = rhinoDoc.strings ();
         if (docStrings.count > 0) {
-            let propertyGroup = new PropertyGroup ('Document user texts');
+            let propertyGroup = new PropertyGroup (Loc ('Document user texts'));
             for (let i = 0; i < docStrings.count; i++) {
                 let docString = docStrings.get (i);
                 propertyGroup.AddProperty (new Property (PropertyType.Text, docString[0], docString[1]));
@@ -159,7 +159,7 @@ export class Importer3dm extends ImporterBase
             rhinoMesh.delete ();
         } else if (objectType === this.rhino.ObjectType.SubD) {
             rhinoGeometry.subdivide (3);
-            let rhinoMesh = this.rhino.Mesh.createFromSubDControlNet (rhinoGeometry);
+            let rhinoMesh = this.rhino.Mesh.createFromSubDControlNet (rhinoGeometry, true);
             if (rhinoMesh !== null) {
                 this.ImportRhinoGeometryAsMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences);
                 rhinoMesh.delete ();
@@ -238,7 +238,7 @@ export class Importer3dm extends ImporterBase
 
         let userStrings = rhinoAttributes.getUserStrings ();
         if (userStrings.length > 0) {
-            let propertyGroup = new PropertyGroup ('User texts');
+            let propertyGroup = new PropertyGroup (Loc ('User texts'));
             for (let i = 0; i < userStrings.length; i++) {
                 let userString = userStrings[i];
                 propertyGroup.AddProperty (new Property (PropertyType.Text, userString[0], userString[1]));

@@ -1,4 +1,4 @@
-import { LoadExternalLibrary } from '../io/externallibs.js';
+import { LoadExternalLibrary } from '../import/importerutils.js';
 import { FileFormat } from '../io/fileutils.js';
 import { MaterialType } from '../model/material.js';
 import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
@@ -20,7 +20,7 @@ export class Exporter3dm extends ExporterBase
 	ExportContent (exporterModel, format, files, onFinish)
 	{
 		if (this.rhino === null) {
-			LoadExternalLibrary ('loaders/rhino3dm.min.js').then (() => {
+			LoadExternalLibrary ('rhino3dm').then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
                     this.ExportRhinoContent (exporterModel, files, onFinish);
@@ -84,7 +84,7 @@ export class Exporter3dm extends ExporterBase
                 rhinoMaterial.diffuseColor = ColorToRhinoColor (material.color);
                 rhinoMaterial.transparency = 1.0 - material.opacity;
 
-                let rhinoMaterialIndex = rhinoDoc.materials ().count ();
+                let rhinoMaterialIndex = rhinoDoc.materials ().count;
                 rhinoDoc.materials ().add (rhinoMaterial);
 
                 let rhinoMesh = new this.rhino.Mesh.createFromThreejsJSON (threeJson);
@@ -98,8 +98,7 @@ export class Exporter3dm extends ExporterBase
 
         let writeOptions = new this.rhino.File3dmWriteOptions ();
         writeOptions.version = 6;
-        let rhinoDocBuffer = rhinoDoc.toByteArray (writeOptions);
-
+        let rhinoDocBuffer = rhinoDoc.toByteArrayOptions (writeOptions);
         rhinoFile.SetBufferContent (rhinoDocBuffer);
 		onFinish ();
     }

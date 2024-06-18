@@ -1,5 +1,6 @@
-import { IsDefined, ValueOrDefault, CopyObjectAttributes, IsObjectEmpty, EscapeHtmlChars } from './core/core.js';
+import { IsDefined, ValueOrDefault, CopyObjectAttributes, IsObjectEmpty, FormatString, EscapeHtmlChars } from './core/core.js';
 import { EventNotifier } from './core/eventnotifier.js';
+import { SetLocalizedStrings, SetLanguageCode, Loc, FLoc } from './core/localization.js';
 import { TaskRunner, RunTaskAsync, RunTasks, RunTasksBatch, WaitWhile } from './core/taskrunner.js';
 import { Exporter } from './export/exporter.js';
 import { Exporter3dm } from './export/exporter3dm.js';
@@ -38,11 +39,11 @@ import { ImporterPly } from './import/importerply.js';
 import { ImporterStl } from './import/importerstl.js';
 import { ImporterThreeSvg } from './import/importersvg.js';
 import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf, ImporterThreeAmf } from './import/importerthree.js';
-import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency } from './import/importerutils.js';
+import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency, CreateOcctWorker, LoadExternalLibrary } from './import/importerutils.js';
 import { BinaryReader } from './io/binaryreader.js';
 import { BinaryWriter } from './io/binarywriter.js';
 import { ArrayBufferToUtf8String, ArrayBufferToAsciiString, AsciiStringToArrayBuffer, Utf8StringToArrayBuffer, Base64DataURIToArrayBuffer, GetFileExtensionFromMimeType, CreateObjectUrl, CreateObjectUrlWithMimeType, RevokeObjectUrl } from './io/bufferutils.js';
-import { SetExternalLibLocation, GetExternalLibPath, LoadExternalLibrary } from './io/externallibs.js';
+import { SetExternalLibLocation, GetExternalLibPath, LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl } from './io/externallibs.js';
 import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostUrls, IsUrl, FileSource, FileFormat } from './io/fileutils.js';
 import { TextWriter } from './io/textwriter.js';
 import { RGBColor, RGBAColor, ColorComponentFromFloat, ColorComponentToFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, RGBAColorToHexString, HexStringToRGBColor, HexStringToRGBAColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
@@ -80,8 +81,13 @@ export {
     ValueOrDefault,
     CopyObjectAttributes,
     IsObjectEmpty,
+    FormatString,
     EscapeHtmlChars,
     EventNotifier,
+    SetLocalizedStrings,
+    SetLanguageCode,
+    Loc,
+    FLoc,
     TaskRunner,
     RunTaskAsync,
     RunTasks,
@@ -187,6 +193,8 @@ export {
     IsPowerOfTwo,
     NextPowerOfTwo,
     UpdateMaterialTransparency,
+    CreateOcctWorker,
+    LoadExternalLibrary,
     BinaryReader,
     BinaryWriter,
     ArrayBufferToUtf8String,
@@ -200,7 +208,8 @@ export {
     RevokeObjectUrl,
     SetExternalLibLocation,
     GetExternalLibPath,
-    LoadExternalLibrary,
+    LoadExternalLibraryFromLibs,
+    LoadExternalLibraryFromUrl,
     GetFileName,
     GetFileExtension,
     RequestUrl,

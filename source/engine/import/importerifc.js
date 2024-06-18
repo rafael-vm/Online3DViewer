@@ -2,13 +2,14 @@ import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
-import { LoadExternalLibrary } from '../io/externallibs.js';
+import { LoadExternalLibraryFromLibs } from '../io/externallibs.js';
 import { RGBColorFromFloatComponents } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 import { ColorToMaterialConverter } from './importerutils.js';
+import { Loc, FLoc } from '../core/localization.js';
 
 export class ImporterIfc extends ImporterBase
 {
@@ -43,14 +44,14 @@ export class ImporterIfc extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.ifc === null) {
-            LoadExternalLibrary ('loaders/web-ifc-api-browser.js').then (() => {
+            LoadExternalLibraryFromLibs ('web-ifc-api-browser.js').then (() => {
                 this.ifc = new WebIFC.IfcAPI ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);
                     onFinish ();
                 });
             }).catch (() => {
-                this.SetError ('Failed to load web-ifc.');
+                this.SetError (Loc ('Failed to load web-ifc.'));
                 onFinish ();
             });
         } else {
@@ -79,7 +80,7 @@ export class ImporterIfc extends ImporterBase
     ImportIfcMesh (modelID, ifcMesh)
     {
         let mesh = new Mesh ();
-        mesh.SetName ('Mesh ' + ifcMesh.expressID.toString ());
+        mesh.SetName (FLoc ('Mesh {0}', ifcMesh.expressID.toString ()));
 
         let vertexOffset = 0;
         const ifcGeometries = ifcMesh.geometries;
@@ -170,11 +171,11 @@ export class ImporterIfc extends ImporterBase
                             break;
                         case 'IfcBoolean':
                         case 'IfcLogical':
-                            strValue = 'Unknown';
+                            strValue = Loc ('Unknown');
                             if (property.NominalValue.value === 'T') {
-                                strValue = 'True';
+                                strValue = Loc ('True');
                             } else if (property.NominalValue.value === 'F') {
-                                strValue = 'False';
+                                strValue = Loc ('False');
                             }
                             elemProperty = new Property (PropertyType.Text, propertyName, strValue);
                             break;
