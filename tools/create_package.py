@@ -67,6 +67,10 @@ def CreateWebsite (rootDir, websiteDir, version, testBuild):
 		if os.path.exists (metaFile):
 			metaContent = Utils.GetFileContent (metaFile)
 			replacer.ReplaceTokenContent ('<!-- meta start -->', '<!-- meta end -->', metaContent)
+		introFooterFile = os.path.join (rootDir, 'plugins', 'website_intro_footer_data.txt')
+		if os.path.exists (introFooterFile) and not testBuild:
+			introFooterContent = Utils.GetFileContent (introFooterFile)
+			replacer.ReplaceTokenContent ('<!-- intro footer start -->', '<!-- intro footer end -->', introFooterContent)
 		websiteAnalyticsFile = os.path.join (rootDir, 'plugins', 'website_analytics_data.txt')
 		if os.path.exists (websiteAnalyticsFile) and not testBuild:
 			websiteAnalyticsContent = Utils.GetFileContent (websiteAnalyticsFile)

@@ -2,6 +2,7 @@ import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBAColor, RGBColor } from '../engine/model/color.js';
 import { EdgeSettings } from '../engine/viewer/viewermodel.js';
 import { CookieGetBoolVal, CookieGetRGBColorVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetRGBColorVal, CookieSetIntVal, CookieSetStringVal, CookieSetRGBAColorVal, CookieGetRGBAColorVal } from './cookiehandler.js';
+import { GetPreferredColorScheme } from './utils.js';
 
 export const Theme =
 {
@@ -30,7 +31,7 @@ export class Settings
 
     LoadFromCookies ()
     {
-        this.themeId = CookieGetIntVal ('ov_theme_id', Theme.Light);
+        this.themeId = CookieGetIntVal ('ov_theme_id', GetPreferredColorScheme ());
         this.environmentMapName = CookieGetStringVal ('ov_environment_map', 'fishermans_bastion');
         this.backgroundIsEnvMap = CookieGetBoolVal ('ov_background_is_envmap', false);
         this.backgroundColor = CookieGetRGBAColorVal ('ov_background_color', new RGBAColor (255, 255, 255, 255));
